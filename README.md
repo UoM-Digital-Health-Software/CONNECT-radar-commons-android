@@ -1,3 +1,54 @@
+
+# CONNECT 
+
+This is a package created by the Hyve team to provide android passive data stream. We forked this package to add some extra fixes on top of it (android 14 migration for Health Connect)
+ 
+
+**Don't use the master branch if it is being plugged into the CONNECT app unless there is some need in terms of fixing a bug as the master branch is well ahead and might not be currently compatible with the Cordova plugin**
+
+
+
+This package is then being consumed by the **https://github.com/thehyve/radar-prmt-cordova** cordova plugin which is then consumed by our CONNECT app.
+
+
+
+## Deploy locally
+ 
+If changes are needed in this plugin, it is necessary to "deploy" this plugin locally: 
+
+```
+./gradlew publishToMavenLocal
+```
+
+
+
+## Make radar-prmt-cordova consume dependancies locally
+
+Then in the plugin.gradle in **https://github.com/thehyve/radar-prmt-cordova/cordova-plugin-radar-passive/src/android/** make sure to add mavenLocal() to the repositories as a first thing (it should be done by default): 
+
+```
+repositories {
+    mavenLocal()
+    maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url 'https://repo.thehyve.nl/content/repositories/releases' }
+}
+```
+
+The "cordova-plugin-radar-passive" then needs to be copied to CONNECT app and the android project recreated to take place (only if you had to change the.
+
+## Refresh the dependencies in the CONNECT App  
+
+
+if changes were made to this plugin and the cordova-plugin-radar is setup with mavenLocal in the CONNECT App, then pull the new local changes as this: 
+
+```
+./gradlew assembleDebug --refresh-dependencies
+```
+
+
+
+
+
 # RADAR-Commons-Android
 
 [![Build Status](https://travis-ci.org/RADAR-base/radar-commons-android.svg?branch=master)](https://travis-ci.org/RADAR-base/radar-commons-android)

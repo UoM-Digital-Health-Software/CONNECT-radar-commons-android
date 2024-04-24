@@ -48,7 +48,7 @@ dependencies {
         exclude group: 'org.apache.avro', module: 'avro'
     }
     // Add a dependency of Health Connect SDK
-    implementation("androidx.health.connect:connect-client:1.0.0-alpha11")
+    implementation ("androidx.health.connect:connect-client:1.1.0-alpha06")
     implementation("androidx.datastore:datastore:1.0.0")
     implementation  "com.google.protobuf:protobuf-javalite:3.23.3"
 

@@ -51,7 +51,7 @@ import kotlin.reflect.KClass
 // TODO: Available from version 1.1.0-alpha01
 // HealthConnectClient.getSdkStatus(this) == HealthConnectClient.SDK_AVAILABLE
 internal fun Context.isHealthConnectAvailable(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 &&
-            HealthConnectClient.sdkStatus(this) == HealthConnectClient.SDK_AVAILABLE
+            HealthConnectClient.getSdkStatus(this) == HealthConnectClient.SDK_AVAILABLE
 
 internal fun String.toHealthConnectTypes(): List<KClass<out Record>> = split(' ', ',', '+')
     .mapNotNull { healthConnectTypes[it.trim()] }

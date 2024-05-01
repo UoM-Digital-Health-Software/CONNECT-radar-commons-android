@@ -12,11 +12,7 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.changes.DeletionChange
 import androidx.health.connect.client.changes.UpsertionChange
 import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.Record
-import androidx.health.connect.client.records.SleepStageRecord
-import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.*
 import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.request.ChangesTokenRequest
@@ -50,6 +46,8 @@ import java.util.concurrent.ThreadLocalRandom
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+
 
 @RequiresApi(Build.VERSION_CODES.O_MR1)
 class HealthConnectManager(service: HealthConnectService) :
@@ -180,18 +178,22 @@ class HealthConnectManager(service: HealthConnectService) :
     }
 
     private suspend fun processSleepStage() {
-        processRecord<SleepStageRecord, HealthConnectTypedData>(typedDataCache) { record ->
-            listOf(
+        processRecord<SleepSessionRecord, HealthConnectTypedData>(typedDataCache) { record ->
+            val recordTime = record.startTime.toDouble();
+            var endTime = record.endTime.toDouble();
+
+            record.stages.map { sample ->
                 healthConnectTypedData<StepsRecord> {
-                    time = record.startTime.toDouble()
-                    endTime = record.endTime.toDouble()
+                    time =  recordTime
+                    endTime = endTime
                     timeZoneOffset = record.startZoneOffset?.totalSeconds
                         ?: record.endZoneOffset?.totalSeconds
                     metadata = record.metadata.toHealthConnectMetadata()
-                    intValue = record.stage
-                    stringValue = record.stage.toSleepStageString()
+                    intValue = sample.stage
+                    stringValue = sample.stage.toSleepStageString()
                 }
-            )
+
+            }
         }
     }
 
@@ -343,7 +345,7 @@ class HealthConnectManager(service: HealthConnectService) :
     companion object {
         private const val REQUEST_CODE = 231031
         private const val MANAGER_NAME = "org.radarbase.passive.google.healthconnect.HealthConnectManager"
-        private val defaultInterval = 1.hours
+        private val defaultInterval = 10.minutes
 
         private val logger = LoggerFactory.getLogger(HealthConnectManager::class.java)
 
@@ -480,13 +482,13 @@ class HealthConnectManager(service: HealthConnectService) :
         }
 
         private fun Int.toSleepStageString() = when (this) {
-            SleepStageRecord.STAGE_TYPE_AWAKE -> "AWAKE"
-            SleepStageRecord.STAGE_TYPE_SLEEPING -> "SLEEPING"
-            SleepStageRecord.STAGE_TYPE_OUT_OF_BED -> "OUT_OF_BED"
-            SleepStageRecord.STAGE_TYPE_LIGHT -> "LIGHT"
-            SleepStageRecord.STAGE_TYPE_DEEP -> "DEEP"
-            SleepStageRecord.STAGE_TYPE_REM -> "REM"
-            SleepStageRecord.STAGE_TYPE_UNKNOWN -> "UNKNOWN"
+            SleepSessionRecord.STAGE_TYPE_AWAKE -> "AWAKE"
+            SleepSessionRecord.STAGE_TYPE_SLEEPING -> "SLEEPING"
+            SleepSessionRecord.STAGE_TYPE_OUT_OF_BED -> "OUT_OF_BED"
+            SleepSessionRecord.STAGE_TYPE_LIGHT -> "LIGHT"
+            SleepSessionRecord.STAGE_TYPE_DEEP -> "DEEP"
+            SleepSessionRecord.STAGE_TYPE_REM -> "REM"
+            SleepSessionRecord.STAGE_TYPE_UNKNOWN -> "UNKNOWN"
             else -> null
         }
 

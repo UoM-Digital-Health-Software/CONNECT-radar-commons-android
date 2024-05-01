@@ -21,7 +21,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:7.4.0-beta02'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.bjoernq:unmockplugin:0.7.9'
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.18"
@@ -42,7 +42,7 @@ allprojects {
     ext.issueUrl = 'https://github.com/' + githubRepoName + '/issues'
     ext.website = 'http://radar-base.org'
 
-    version = "1.2.6-cordova-SNAPSHOT"
+    version = "1.2.7-cordova-SNAPSHOT"
     group = 'org.radarbase'
 
     ext.versionCode = 50

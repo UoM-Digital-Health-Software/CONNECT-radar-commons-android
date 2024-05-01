@@ -36,7 +36,6 @@ import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SexualActivityRecord
 import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.SleepStageRecord
 import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.records.StepsCadenceRecord
 import androidx.health.connect.client.records.StepsRecord
@@ -51,7 +50,7 @@ import kotlin.reflect.KClass
 // TODO: Available from version 1.1.0-alpha01
 // HealthConnectClient.getSdkStatus(this) == HealthConnectClient.SDK_AVAILABLE
 internal fun Context.isHealthConnectAvailable(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 &&
-            HealthConnectClient.sdkStatus(this) == HealthConnectClient.SDK_AVAILABLE
+            HealthConnectClient.getSdkStatus(this) == HealthConnectClient.SDK_AVAILABLE
 
 internal fun String.toHealthConnectTypes(): List<KClass<out Record>> = split(' ', ',', '+')
     .mapNotNull { healthConnectTypes[it.trim()] }
@@ -88,7 +87,6 @@ internal val healthConnectTypes = TreeMap<String, KClass<out Record>>(java.lang.
     put("RestingHeartRate", RestingHeartRateRecord::class)
     put("SexualActivity", SexualActivityRecord::class)
     put("SleepSession", SleepSessionRecord::class)
-    put("SleepStage", SleepStageRecord::class)
     put("Speed", SpeedRecord::class)
     put("StepsCadence", StepsCadenceRecord::class)
     put("Steps", StepsRecord::class)

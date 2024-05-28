@@ -53,11 +53,11 @@ class ApplicationStatusManager(
     private val timeZoneTopic: DataCache<ObservationKey, ApplicationTimeZone> = createCache("application_time_zone", ApplicationTimeZone())
     private val deviceInfoTopic: DataCache<ObservationKey, ApplicationDeviceInfo> = createCache("application_device_info", ApplicationDeviceInfo())
 
-    private val processor: OfflineProcessor
+    val processor: OfflineProcessor
     private val creationTimeStamp: Long = SystemClock.elapsedRealtime()
     private val sntpClient: SntpClient = SntpClient()
     private val prefs: SharedPreferences = service.getSharedPreferences(ApplicationStatusManager::class.java.name, Context.MODE_PRIVATE)
-    private var tzProcessor: OfflineProcessor? = null
+    var tzProcessor: OfflineProcessor? = null
 
     @get:Synchronized
     @set:Synchronized

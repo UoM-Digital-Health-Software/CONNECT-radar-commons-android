@@ -347,7 +347,7 @@ class HealthConnectManager(service: HealthConnectService) :
     companion object {
         private const val REQUEST_CODE = 231031
         private const val MANAGER_NAME = "org.radarbase.passive.google.healthconnect.HealthConnectManager"
-        private val defaultInterval = 10.minutes
+        private val defaultInterval = 30.minutes
 
         private val logger = LoggerFactory.getLogger(HealthConnectManager::class.java)
 

@@ -119,7 +119,8 @@ abstract class SourceProvider<T : BaseSourceState>(protected val radarService: R
             }
 
             radarService.startService(intent)
-            radarService.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+            logger.warn("Binding above client")
+            radarService.bindService(intent, connection, Context.BIND_ABOVE_CLIENT)
 
             this.intent = intent
 

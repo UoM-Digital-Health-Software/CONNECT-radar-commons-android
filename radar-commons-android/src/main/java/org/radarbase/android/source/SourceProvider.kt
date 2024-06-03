@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory
 @Keep
 abstract class SourceProvider<T : BaseSourceState>(protected val radarService: RadarService) {
     private var _connection: SourceServiceConnection<T>? = null
+   var intent : Intent? = null;
 
     val connection: SourceServiceConnection<T>
         get() = _connection
@@ -118,7 +119,10 @@ abstract class SourceProvider<T : BaseSourceState>(protected val radarService: R
             }
 
             radarService.startService(intent)
+            logger.warn("Binding above client")
             radarService.bindService(intent, connection, Context.BIND_ABOVE_CLIENT)
+
+            this.intent = intent
 
             isBound = true
         } catch (ex: IllegalStateException) {
@@ -134,9 +138,18 @@ abstract class SourceProvider<T : BaseSourceState>(protected val radarService: R
         check(isBound) { "Service is not bound" }
         logger.debug("Unbinding {}", this)
         isBound = false
-        connection.stopRecording()
         radarService.unbindService(connection)
+
         connection.onServiceDisconnected(null)
+
+        if(this.intent != null) {
+            try {
+                radarService.stopService(intent)
+            }
+            catch(e: Exception){
+                logger.error("Error stopping service in SourceProvider: {}", e.message)
+            }
+        }
     }
 
     /**

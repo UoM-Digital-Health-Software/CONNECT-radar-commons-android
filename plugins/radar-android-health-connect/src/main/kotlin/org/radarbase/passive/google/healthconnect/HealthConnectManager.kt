@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Base64
 import android.util.Base64.NO_PADDING
 import android.util.Base64.URL_SAFE
+import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
@@ -31,6 +32,7 @@ import org.radarbase.android.auth.SourceMetadata
 import org.radarbase.android.data.DataCache
 import org.radarbase.android.source.AbstractSourceManager
 import org.radarbase.android.source.BaseSourceState
+import org.radarbase.android.source.SourceService
 import org.radarbase.android.source.SourceStatusListener
 import org.radarbase.android.util.OfflineProcessor
 import org.radarcns.kafka.ObservationKey
@@ -70,7 +72,7 @@ class HealthConnectManager(service: HealthConnectService) :
     private val changesTokens = ConcurrentHashMap<KClass<out Record>, String>()
     private val devices = ConcurrentHashMap<LocalDevice, HealthConnectDevice>()
 
-    private val processor = OfflineProcessor(service) {
+    val processor = OfflineProcessor(service) {
         requestCode = REQUEST_CODE
         requestName = MANAGER_NAME
         wake = false
@@ -345,7 +347,7 @@ class HealthConnectManager(service: HealthConnectService) :
     companion object {
         private const val REQUEST_CODE = 231031
         private const val MANAGER_NAME = "org.radarbase.passive.google.healthconnect.HealthConnectManager"
-        private val defaultInterval = 10.minutes
+        private val defaultInterval = 30.minutes
 
         private val logger = LoggerFactory.getLogger(HealthConnectManager::class.java)
 

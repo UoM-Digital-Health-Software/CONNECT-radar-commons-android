@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory
 @Keep
 abstract class SourceProvider<T : BaseSourceState>(protected val radarService: RadarService) {
     private var _connection: SourceServiceConnection<T>? = null
-   var intent : Intent? = null;
 
     val connection: SourceServiceConnection<T>
         get() = _connection
@@ -122,7 +121,6 @@ abstract class SourceProvider<T : BaseSourceState>(protected val radarService: R
             logger.warn("Binding above client")
             radarService.bindService(intent, connection, Context.BIND_ABOVE_CLIENT)
 
-            this.intent = intent
 
             isBound = true
         } catch (ex: IllegalStateException) {
@@ -135,15 +133,35 @@ abstract class SourceProvider<T : BaseSourceState>(protected val radarService: R
      * Unbind the service.
      */
     fun unbind() {
-        check(isBound) { "Service is not bound" }
-        logger.debug("Unbinding {}", this)
-        isBound = false
-        radarService.unbindService(connection)
-
-        connection.onServiceDisconnected(null)
-
-        if(this.intent != null) {
+        logger.warn("before unbinding {}", this)
+        if(isBound == false) {
+            logger.warn("unbinding in check {}", this)
             try {
+
+                radarService.unbindService(connection)
+            } catch (e: Exception) {
+                logger.error("Error unbinding service: {}", e.message)
+
+            }
+
+            try {
+                val intent = Intent(radarService, serviceClass)
+                radarService.stopService(intent)
+            }
+            catch(e: Exception){
+                logger.error("Error stopping not bounded service: {}", e.message)
+            }
+        } else {
+            logger.warn("Unbinding bounded {}", this)
+            isBound = false
+            radarService.unbindService(connection)
+
+            connection.onServiceDisconnected(null)
+
+
+            try {
+                logger.warn("Unbinding intent manually {}", this)
+                val intent = Intent(radarService, serviceClass)
                 radarService.stopService(intent)
             }
             catch(e: Exception){

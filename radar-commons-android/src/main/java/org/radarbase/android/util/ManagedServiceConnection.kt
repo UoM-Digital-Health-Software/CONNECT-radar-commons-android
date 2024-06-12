@@ -25,6 +25,7 @@ open class ManagedServiceConnection<T: IBinder>(
     var bindFlags = BIND_AUTO_CREATE
 
     private val connection: ServiceConnection = object : ServiceConnection {
+
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             service?.let { b ->
                 @Suppress("UNCHECKED_CAST")
@@ -35,6 +36,7 @@ open class ManagedServiceConnection<T: IBinder>(
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
+
             binder = null
         }
     }
@@ -65,12 +67,17 @@ open class ManagedServiceConnection<T: IBinder>(
                 } catch (ex: IllegalStateException) {
                     logger.warn("Cannot unbind connection that was not properly bound.")
                 }
+
+
             }
         }
     }
 
     fun unbind(): Boolean {
+        var isUnbinded = false;
         if (isBound) {
+
+            logger.warn("Unbinding in ManagedServiceConnection {}.", this)
             binder?.also { bound ->
                 onUnboundListeners.forEach { it(bound) }
                 binder = null
@@ -78,10 +85,23 @@ open class ManagedServiceConnection<T: IBinder>(
             isBound = false
             try {
                 context.unbindService(connection)
-                return true
-            } catch (ex: IllegalStateException) {
+                isUnbinded = true;
+            } catch (ex: Exception) {
                 logger.warn("Cannot unbind connection that was not bound.")
             }
+
+            try {
+                val intent = Intent(context, cls)
+                context.stopService(intent)
+                isUnbinded = true;
+            } catch (ex: Exception) {
+                logger.warn("Cannot stop nonexistent service.")
+            }
+
+            if(isUnbinded) {
+                return true;
+            }
+
         } else {
             logger.warn("Connection was never bound")
         }

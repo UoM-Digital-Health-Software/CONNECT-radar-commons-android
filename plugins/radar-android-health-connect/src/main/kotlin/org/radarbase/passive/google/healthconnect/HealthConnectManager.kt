@@ -82,6 +82,12 @@ class HealthConnectManager(service: HealthConnectService) :
         interval(defaultInterval)
     }
 
+
+
+
+
+
+
     var interval: Duration = defaultInterval
         set(value) {
             processor.interval(value)
@@ -90,6 +96,7 @@ class HealthConnectManager(service: HealthConnectService) :
 
     init {
         healthConnectClient = HealthConnectClient.getOrCreate(service)
+
     }
 
     override fun start(acceptableIds: Set<String>) {
@@ -235,6 +242,7 @@ class HealthConnectManager(service: HealthConnectService) :
                 )
 
             do {
+
                 var response = healthConnectClient.getChanges(token)
 
                 if (response.changesTokenExpired) {
@@ -272,9 +280,10 @@ class HealthConnectManager(service: HealthConnectService) :
                     }
                 }
             }
-        } catch (ex: SecurityException) {
-            logger.error("Not allowed to access Health Connect data", ex)
+        } catch (ex: Exception) {
+            logger.error("Health Connect exception", ex)
         }
+
     }
 
 

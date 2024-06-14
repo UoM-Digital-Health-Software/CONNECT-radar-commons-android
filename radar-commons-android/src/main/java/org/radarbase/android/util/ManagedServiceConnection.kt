@@ -105,7 +105,26 @@ open class ManagedServiceConnection<T: IBinder>(
         } else {
             logger.warn("Connection was never bound")
         }
-        return false
+
+
+        try {
+            context.unbindService(connection)
+            isUnbinded = true;
+        } catch (ex: Exception) {
+            logger.warn("Cannot unbind connection that was not bound.")
+        }
+
+        try {
+            val intent = Intent(context, cls)
+            context.stopService(intent)
+            isUnbinded = true;
+        } catch (ex: Exception) {
+            logger.warn("Cannot stop nonexistent service.")
+        }
+
+
+
+        return isUnbinded
     }
 
     override fun toString(): String = "ManagedServiceConnection<${cls.simpleName}>"

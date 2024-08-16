@@ -16,15 +16,18 @@
 
 package org.radarbase.android
 
+import android.Manifest
 import android.Manifest.permission.*
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
 import android.os.*
 import android.os.Process.THREAD_PRIORITY_BACKGROUND
 import androidx.annotation.CallSuper
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LifecycleService
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.apache.avro.specific.SpecificRecord
@@ -184,10 +187,41 @@ abstract class RadarService : LifecycleService(), ServerStatusListener, LoginLis
         super.onStartCommand(intent, flags, startId)
         configure(configuration.latestConfig)
         checkPermissions()
-        startForeground(1, createForegroundNotification())
+
+
+        if (!checkLocationPermissionIsGiven()) return START_NOT_STICKY
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(1, createForegroundNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
+        } else {
+            startForeground(1, createForegroundNotification())
+
+        }
 
         return START_STICKY
     }
+
+    private fun checkLocationPermissionIsGiven() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    } else {
+        ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
 
     protected open fun createForegroundNotification(): Notification {
         val mainIntent = packageManager.getLaunchIntentForPackage(packageName)

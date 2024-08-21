@@ -21,8 +21,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Context.ALARM_SERVICE
-import android.content.Context.POWER_SERVICE
+import android.content.Context.*
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Debug
@@ -104,7 +103,7 @@ class OfflineProcessor(
         }
         handler.execute {
             didStart = true
-            context.registerReceiver(this.receiver, IntentFilter(requestName))
+            context.registerReceiver(this.receiver, IntentFilter(requestName), RECEIVER_EXPORTED)
             schedule()
             initializer?.let { it() }
         }

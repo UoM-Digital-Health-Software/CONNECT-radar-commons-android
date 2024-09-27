@@ -27,6 +27,7 @@ class HealthConnectService : SourceService<BaseSourceState>() {
 
     @CallSuper
     override fun onDestroy() {
+
     if( sourceManager != null &&  sourceManager is HealthConnectManager) {
         try {
             var manager = sourceManager as HealthConnectManager

@@ -62,7 +62,7 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
-    implementation files('libs/samsung-health-data-1.5.0.aar')
+    implementation files('libs/samsung-health-data-1.5.0.jar')
 
 }
 

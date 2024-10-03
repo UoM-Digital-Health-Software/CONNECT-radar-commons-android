@@ -1,15 +1,12 @@
 package org.radarbase.passive.samsungsdk
 
-import android.os.Build
 import androidx.annotation.CallSuper
-import androidx.annotation.RequiresApi
 import org.radarbase.android.config.SingleRadarConfiguration
 import org.radarbase.android.source.BaseSourceState
 import org.radarbase.android.source.SourceManager
 import org.radarbase.android.source.SourceService
-import org.radarbase.android.source.UnavailableSourceManager
 import org.slf4j.LoggerFactory
-import kotlin.time.Duration.Companion.seconds
+
 
 class SamsungHealthService : SourceService<BaseSourceState>() {
     override val defaultState: BaseSourceState
@@ -24,14 +21,14 @@ class SamsungHealthService : SourceService<BaseSourceState>() {
 
     @CallSuper
     override fun onDestroy() {
-//        if( sourceManager != null &&  sourceManager is HealthConnectManager) {
-//            try {
-//                var manager = sourceManager as HealthConnectManager
-//                manager.processor.close();
-//            } catch (e: Exception) {
-//                logger.error("Error on destroy {}", e.message)
-//            }
-//        }
+        if( sourceManager != null &&  sourceManager is SamsungHealthManager) {
+            try {
+                var manager = sourceManager as SamsungHealthManager
+                manager.close()
+            } catch (e: Exception) {
+                logger.error("Error on destroy {}", e.message)
+            }
+        }
         super.onDestroy()
     }
 

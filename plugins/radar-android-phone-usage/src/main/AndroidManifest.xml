@@ -7,7 +7,7 @@
         android:name="android.permission.PACKAGE_USAGE_STATS"/>
 
     <application android:allowBackup="true">
-        <service android:name=".PhoneUsageService" android:stopWithTask="true"/>
+        <service android:name=".PhoneUsageService"/>
     </application>
 
     <queries>

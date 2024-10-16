@@ -43,7 +43,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".HealthConnectService" android:stopWithTask="true" />
+        <service android:name=".HealthConnectService"  />
     </application>
 
 </manifest>

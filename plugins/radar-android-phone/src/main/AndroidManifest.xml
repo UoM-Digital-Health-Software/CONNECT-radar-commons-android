@@ -19,11 +19,11 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <application android:allowBackup="true">
-        <service android:name=".PhoneSensorService" android:stopWithTask="true"/>
-        <service android:name=".PhoneLocationService" android:stopWithTask="true"
+        <service android:name=".PhoneSensorService"/>
+        <service android:name=".PhoneLocationService"
             android:foregroundServiceType="location"/>
-        <service android:name=".PhoneContactsListService" android:stopWithTask="true"/>
-        <service android:name=".PhoneBluetoothService" android:stopWithTask="true"
+        <service android:name=".PhoneContactsListService"/>
+        <service android:name=".PhoneBluetoothService"
             android:foregroundServiceType="location"/>
     </application>
 </manifest>

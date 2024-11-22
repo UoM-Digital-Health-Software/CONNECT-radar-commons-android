@@ -46,6 +46,15 @@ allprojects {
     group = 'org.radarbase'
 
     ext.versionCode = 50
+
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+        flatDir {
+            dirs 'libs'
+        }
+    }
 }
 
 subprojects {
@@ -63,11 +72,13 @@ subprojects {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
     }
 
     dependencies {
         api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+        implementation 'com.empatica:E4link:1.0.0'
     }
 
     idea {
@@ -121,4 +132,33 @@ nexusPublishing {
 
 wrapper {
     gradleVersion '8.1.1'
+}
+
+task installE4Link {
+    doLast {
+        def groupId = 'com.empatica'
+        def artifactId = 'E4link'
+        def version = '1.0.0'
+        def targetDir = new File("${System.getProperty('user.home')}/.m2/repository/com/empatica/E4link/1.0.0")
+        
+        targetDir.mkdirs()
+        
+        copy {
+            from 'E4link-1.0.0.aar'
+            into targetDir
+            rename { "${artifactId}-${version}.aar" }
+        }
+        
+        def pomContent = """<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${groupId}</groupId>
+  <artifactId>${artifactId}</artifactId>
+  <version>${version}</version>
+  <packaging>aar</packaging>
+</project>"""
+        
+        new File(targetDir, "${artifactId}-${version}.pom").text = pomContent
+    }
 }

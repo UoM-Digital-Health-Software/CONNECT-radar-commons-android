@@ -11,6 +11,25 @@ This is a package created by the Hyve team to provide android passive data strea
 This package is then being consumed by the **https://github.com/thehyve/radar-prmt-cordova** cordova plugin which is then consumed by our CONNECT app.
 
 
+## Setup
+This project requires Java 17.
+
+### Empatica SDK Setup
+
+1. Create an account on [Empatica Connect](https://e4.empatica.com/connect/login.php)
+2. Activate your account through the registration email
+3. Apply for developer status
+4. Download the E4link SDK from [Empatica Developer Area](https://box.empatica.com/android/E4link/1.0/E4link.zip)
+5. Extract `E4link-1.0.0.aar` from the downloaded zip file
+6. Install the AAR file to your local Maven repository:
+
+```bash
+./gradlew installE4Link
+```
+OR
+```bash
+mvn install:install-file -Dfile=E4link-1.0.0.aar -DgroupId=com.empatica -DartifactId=E4link -Dversion=1.0.0 -Dpackaging=aar -DgeneratePom=true
+```
 
 ## Deploy locally
  

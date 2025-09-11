@@ -94,6 +94,8 @@ class HealthConnectManager(service: HealthConnectService) :
             field = value
         }
 
+
+
     init {
         healthConnectClient = HealthConnectClient.getOrCreate(service)
 
@@ -106,6 +108,7 @@ class HealthConnectManager(service: HealthConnectService) :
 
     override fun didRegister(source: SourceMetadata) {
         super.didRegister(source)
+
         try {
             managerScope.launch {
                 val preferences = dataStore.data
@@ -143,7 +146,6 @@ class HealthConnectManager(service: HealthConnectService) :
                 launch { processSleepStage() }
                 launch { processExerciseSession() }
             }
-
             status = SourceStatusListener.Status.READY
         }
     }
@@ -189,12 +191,13 @@ class HealthConnectManager(service: HealthConnectService) :
     private suspend fun processSleepStage() {
         processRecord<SleepSessionRecord, HealthConnectTypedData>(typedDataCache) { record ->
             val recordTime = record.startTime.toDouble();
-            var endTime = record.endTime.toDouble();
+            var endTimeData = record.endTime.toDouble();
+
 
             record.stages.map { sample ->
-                healthConnectTypedData<StepsRecord> {
-                    time =  recordTime
-                    endTime = endTime
+                healthConnectTypedData<SleepSessionRecord> {
+                    time =  sample.startTime.toDouble()
+                    endTime = sample.endTime.toDouble()
                     timeZoneOffset = record.startZoneOffset?.totalSeconds
                         ?: record.endZoneOffset?.totalSeconds
                     metadata = record.metadata.toHealthConnectMetadata()

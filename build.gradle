@@ -17,6 +17,7 @@ buildscript {
     ext.kotlin_version = '1.7.21'
     ext.dokka_version = '1.8.10'
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
     }
@@ -42,7 +43,7 @@ allprojects {
     ext.issueUrl = 'https://github.com/' + githubRepoName + '/issues'
     ext.website = 'http://radar-base.org'
 
-    version = "1.2.11-cordova-SNAPSHOT"
+    version = "1.2.13-CONNECT(122)"
     group = 'org.radarbase'
 
     ext.versionCode = 50
@@ -61,6 +62,7 @@ subprojects {
 //---------------------------------------------------------------------------//
 
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }

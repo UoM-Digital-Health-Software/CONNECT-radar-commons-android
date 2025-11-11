@@ -16,6 +16,8 @@
 
 package org.radarbase.monitor.application
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import org.radarbase.android.BuildConfig
 import org.radarbase.android.RadarService
 import org.radarbase.android.source.SourceProvider
@@ -24,6 +26,7 @@ open class ApplicationStatusProvider(radarService: RadarService) : SourceProvide
     override val description: String?
         get() = radarService.getString(R.string.application_status_description)
 
+    @RequiresApi(Build.VERSION_CODES.O_MR1)
     override val serviceClass: Class<ApplicationStatusService> = ApplicationStatusService::class.java
 
     override val pluginNames = listOf(

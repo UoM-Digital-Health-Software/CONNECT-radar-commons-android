@@ -13,6 +13,25 @@ This package is then being consumed by the **https://github.com/thehyve/radar-pr
 
 
 ## Deploy locally
+
+
+### Local schema package
+
+(Mac instructions)
+
+Place the following package ( if this is no longer available, push the CONNECT radar schemas version 0.85 
+
+```
+https://www.dropbox.com/scl/fi/gsw9x1cg21hhfjmpsz8gp/radar-schemas-commons.zip?rlkey=1o6gg1jn5jrytllzvavmd0j1h&st=861ierpc&dl=0
+```
+
+to 
+
+```
+/Users/<user_name>/.m2/repository/org/radarbase
+```
+
+### Push to local mvn repo 
  
 If changes are needed in this plugin, it is necessary to "deploy" this plugin locally: 
 

@@ -1,6 +1,13 @@
 
 # CONNECT 
 
+Please refer to here for any other CONNECT related documentation: 
+
+```
+https://github.com/UoM-Digital-Health-Software/CONNECT/tree/main/mobile/CONNECT_DOCS
+```
+
+
 This is a package created by the Hyve team to provide android passive data stream. We forked this package to add some extra fixes on top of it (android 14 migration for Health Connect)
  
 

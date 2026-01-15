@@ -145,6 +145,10 @@ class HealthConnectManager(service: HealthConnectService) :
                 launch { processHeartRate() }
                 launch { processSleepStage() }
                 launch { processExerciseSession() }
+                launch { processRestingHeartRate() }
+                launch { processHRV() }
+                launch { processRespiratoryRate() }
+                launch { processDistance() }
             }
             status = SourceStatusListener.Status.READY
         }
@@ -188,6 +192,70 @@ class HealthConnectManager(service: HealthConnectService) :
         }
     }
 
+    private suspend fun processDistance() {
+        processRecord<DistanceRecord, HealthConnectTypedData>(typedDataCache) { record ->
+            listOf(
+                healthConnectTypedData<DistanceRecord> {
+                    time = record.startTime.toDouble()
+
+                    endTime = record.endTime.toDouble()
+                    timeZoneOffset = record.startZoneOffset?.totalSeconds
+                        ?: record.endZoneOffset?.totalSeconds
+                    metadata = record.metadata.toHealthConnectMetadata()
+                    unit = "m"
+                    doubleValue = record.distance.inMeters
+                }
+            )
+        }
+    }
+
+    private suspend fun processRespiratoryRate() {
+        processRecord<RespiratoryRateRecord, HealthConnectTypedData>(typedDataCache) { record ->
+            listOf(
+                healthConnectTypedData<RespiratoryRateRecord> {
+                    time = record.time.toDouble()
+
+                    endTime = record.time.toDouble()
+                    timeZoneOffset = record.zoneOffset?.totalSeconds
+                    metadata = record.metadata.toHealthConnectMetadata()
+                    unit = "bpm"
+                    doubleValue = record.rate
+                }
+            )
+        }
+    }
+    private suspend fun processRestingHeartRate() {
+        processRecord<RestingHeartRateRecord, HealthConnectTypedData>(typedDataCache) { record ->
+            listOf(
+                healthConnectTypedData<RestingHeartRateRecord> {
+                    time = record.time.toDouble()
+                    endTime = record.time.toDouble()
+                    timeZoneOffset = record.zoneOffset?.totalSeconds
+                    metadata = record.metadata.toHealthConnectMetadata()
+                    unit = "bpm"
+                    doubleValue = record.beatsPerMinute.toDouble()
+                }
+            )
+        }
+    }
+
+    private suspend fun processHRV() {
+        processRecord<HeartRateVariabilityRmssdRecord, HealthConnectTypedData>(typedDataCache) { record ->
+            listOf(
+                healthConnectTypedData<HeartRateVariabilityRmssdRecord> {
+                    time = record.time.toDouble()
+                    endTime = record.time.toDouble()
+                    timeZoneOffset = record.zoneOffset?.totalSeconds
+                    metadata = record.metadata.toHealthConnectMetadata()
+                    unit = "ms"
+                    doubleValue = record.heartRateVariabilityMillis
+                }
+            )
+        }
+    }
+
+
+
     private suspend fun processSleepStage() {
         processRecord<SleepSessionRecord, HealthConnectTypedData>(typedDataCache) { record ->
             val recordTime = record.startTime.toDouble();
@@ -223,6 +291,14 @@ class HealthConnectManager(service: HealthConnectService) :
             )
         }
     }
+
+
+
+
+
+
+
+
 
     private suspend inline fun <reified T: Record, V: SpecificRecord> processRecord(
         cache: DataCache<ObservationKey, V>,
@@ -359,7 +435,7 @@ class HealthConnectManager(service: HealthConnectService) :
     companion object {
         private const val REQUEST_CODE = 231031
         private const val MANAGER_NAME = "org.radarbase.passive.google.healthconnect.HealthConnectManager"
-        private val defaultInterval = 30.minutes
+        private val defaultInterval = 5.minutes
 
         private val logger = LoggerFactory.getLogger(HealthConnectManager::class.java)
 

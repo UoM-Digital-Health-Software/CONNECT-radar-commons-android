@@ -37,13 +37,13 @@ plugins {
 }
 
 allprojects {
-    ext.githubRepoName = 'RADAR-base/radar-commons-android'
+    ext.githubRepoName = 'UoM-Digital-Health-Software/CONNECT-radar-commons-android'
 
     ext.githubUrl = 'https://github.com/' + githubRepoName + '.git'
     ext.issueUrl = 'https://github.com/' + githubRepoName + '/issues'
     ext.website = 'http://radar-base.org'
 
-    version = "1.2.14-nextgen"
+    version = "1.2.16-CONNECTnext(124)"
     group = 'org.radarbase'
 
     ext.versionCode = 50
@@ -111,15 +111,15 @@ tasks.named("dependencyUpdates").configure {
         isNonStable(it.candidate.version)
     }
 }
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            username = project.hasProperty("ossrh.user") ? project.property("ossrh.user") : System.getenv("OSSRH_USER")
-            password = project.hasProperty("ossrh.password") ? project.property("ossrh.password") : System.getenv("OSSRH_PASSWORD")
-        }
-    }
-}
+//
+//nexusPublishing {
+//    repositories {
+//        sonatype {
+//            username = project.hasProperty("ossrh.user") ? project.property("ossrh.user") : System.getenv("OSSRH_USER")
+//            password = project.hasProperty("ossrh.password") ? project.property("ossrh.password") : System.getenv("OSSRH_PASSWORD")
+//        }
+//    }
+//}
 
 wrapper {
     gradleVersion '8.1.1'

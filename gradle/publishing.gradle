@@ -1,22 +1,21 @@
 apply plugin: 'maven-publish'
 apply plugin: "org.jetbrains.dokka"
-apply plugin: 'signing'
 
 android {
     publishing {
-        singleVariant('release')
+        singleVariant("release")
     }
 }
 
 ext.sharedManifest = manifest {
     attributes(
-            "Implementation-Title": name,
-            "Implementation-Version": version
+            "Implementation-Title": project.name,
+            "Implementation-Version": project.version
     )
 }
 
 task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
+    archiveClassifier.set("sources")
     from android.sourceSets.main.java.srcDirs
     manifest.from sharedManifest
 }
@@ -30,7 +29,7 @@ dokkaJavadoc.configure {
 }
 
 task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-    archiveClassifier.set('javadoc')
+    archiveClassifier.set("javadoc")
     from dokkaJavadoc.outputDirectory
     manifest.from sharedManifest
 }
@@ -39,54 +38,46 @@ publishing {
     publications {
         mavenAar(MavenPublication) {
             afterEvaluate {
-                from components.getByName('release')
+                from components.release
             }
+
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
             artifact sourcesJar
             artifact javadocJar
 
             pom {
                 name = project.name
-                url = githubUrl
                 description = project.description
+                url = githubUrl
+
                 licenses {
                     license {
-                        name = 'The Apache Software License, Version 2.0'
-                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution = 'repo'
+                        name = "Apache License, Version 2.0"
+                        url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
                     }
                 }
-                developers {
-                    developer {
-                        id = 'blootsvoets'
-                        name = 'Joris Borgdorff'
-                        email = 'joris@thehyve.nl'
-                        organization = 'The Hyve'
-                    }
-                }
-                issueManagement {
-                    system = 'GitHub'
-                    url = githubUrl + '/issues'
-                }
-                organization {
-                    name = 'RADAR-base'
-                    url = website
-                }
+
                 scm {
-                    connection = 'scm:git:' + githubUrl
                     url = githubUrl
                 }
             }
         }
     }
-}
 
-signing {
-    useGpgCmd()
-    required { true }
-    sign(tasks["sourcesJar"], tasks["javadocJar"])
-    sign(publishing.publications["mavenAar"])
-}
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/${githubRepoName}")
 
-tasks.withType(Sign).configureEach {
-    onlyIf { gradle.taskGraph.hasTask(project.tasks["publish"]) }
+            credentials {
+                username = findProperty("gpr.user")
+                        ?: System.getenv("GITHUB_ACTOR")
+                password = findProperty("gpr.key")
+                        ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }

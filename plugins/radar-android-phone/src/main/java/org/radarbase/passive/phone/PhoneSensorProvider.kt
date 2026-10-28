@@ -36,9 +36,7 @@ open class PhoneSensorProvider(radarService: RadarService) : SourceProvider<Phon
     override val displayName: String
         get() = radarService.getString(R.string.phoneServiceDisplayName)
 
-    override val permissionsNeeded: List<String> = buildList(1) {
-        add("android.permission.ACTIVITY_RECOGNITION")
-    }
+    override val permissionsNeeded: List<String> = emptyList()
 
     override val sourceProducer: String = PRODUCER
 

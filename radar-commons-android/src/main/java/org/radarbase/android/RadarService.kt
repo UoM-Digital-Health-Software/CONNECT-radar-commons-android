@@ -499,7 +499,6 @@ abstract class RadarService : LifecycleService(), ServerStatusListener, LoginLis
         add(
             PermissionRequester(
                 permissions = buildSet {
-                    add(ACTIVITY_RECOGNITION)
                     add(ACCESS_NETWORK_STATE)
                     add(INTERNET)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

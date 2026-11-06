@@ -6,6 +6,10 @@ on:
   push:
     branches: [ dev ]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   # Build and test the code
   build:
@@ -17,9 +21,15 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Has SNAPSHOT version
+      - name: Check for SNAPSHOT version
         id: is-snapshot
-        run: grep 'version = ".*-SNAPSHOT"' build.gradle
+        run: |
+          if grep -q 'version = ".*-SNAPSHOT"' build.gradle; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Current project version is not a SNAPSHOT; skipping publication."
+          fi
 
       - uses: actions/setup-java@v3
         with:
@@ -33,13 +43,9 @@ jobs:
         env:
           E4LINK_PASSPHRASE: ${{ secrets.E4LINK_PASSPHRASE }}
 
-      - name: Install gpg secret key
-        run: |
-          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
-          gpg --list-secret-keys --keyid-format LONG
-
       - name: Publish
+        if: steps.is-snapshot.outputs.enabled == 'true'
         env:
-          OSSRH_USER: ${{ secrets.OSSRH_USER }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        run: ./gradlew -Psigning.gnupg.keyName=${{ secrets.OSSRH_GPG_SECRET_KEY_NAME }} -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} publish
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew publish

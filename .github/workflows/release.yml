@@ -16,6 +16,10 @@ jobs:
   upload:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SCHEMAS_GITHUB_USER: ${{ vars.SCHEMAS_GITHUB_USER }}
+      SCHEMAS_GITHUB_TOKEN: ${{ secrets.SCHEMAS_GITHUB_TOKEN }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -45,7 +49,4 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew publish

@@ -73,14 +73,21 @@ if changes were made to this plugin and the cordova-plugin-radar is setup with m
 
 ## Consume from GitHub Packages
 
-The Android libraries are published to this repository's GitHub Packages Maven
-registry. Add the registry to the consuming project's repositories and provide
-GitHub Packages credentials:
+The Android libraries and their CONNECT-specific schema dependency are hosted
+in separate GitHub Packages Maven repositories. Add both to the consuming
+project's repositories and provide GitHub Packages credentials:
 
 ```groovy
 repositories {
     maven {
-        url = uri("https://maven.pkg.github.com/UoM-Digital-Health-Software/CONNECT-radar-commons-android")
+        url = uri("https://maven.pkg.github.com/uom-digital-health-software/CONNECT-radar-commons-android")
+        credentials {
+            username = findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+    maven {
+        url = uri("https://maven.pkg.github.com/uom-digital-health-software/CONNECT-RADAR-Schemas")
         credentials {
             username = findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
             password = findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
@@ -95,11 +102,46 @@ dependencies {
 
 For local builds, set `gpr.user` and `gpr.key` in `~/.gradle/gradle.properties`.
 Use a GitHub token with `read:packages` access and ensure the account has access
-to this repository's package. In GitHub Actions, grant the consuming workflow
-package read access and provide `GITHUB_ACTOR` and `GITHUB_TOKEN`.
+to both packages. In GitHub Actions, the token must be able to read packages
+from both repositories; a classic personal access token may be needed for the
+cross-repository schema dependency.
 
 The other published modules use the same group and version, with the module
 name as the artifact ID (for example, `org.radarbase:radar-android-health-connect`).
+
+## Publish the schema dependency
+
+Before publishing the Android libraries, publish
+`org.radarbase:radar-schemas-commons:0.8.5-connect-SNAPSHOT` to the existing
+`CONNECT-RADAR-Schemas` GitHub Packages registry. The standalone publisher uses the existing JAR, sources,
+Javadoc, and POM from
+`~/.m2/repository/org/radarbase/radar-schemas-commons/0.8.5-connect-SNAPSHOT`.
+Ensure these files are the intended CONNECT schema build before publishing; the
+publisher cannot verify their provenance.
+
+Use an account with package write access and a classic personal access token
+with `write:packages` and `read:packages` (and `repo` for a private repository).
+For example, enter the token without echoing it to the terminal:
+
+```bash
+export GITHUB_ACTOR="your-github-username"
+read -rs GITHUB_TOKEN
+export GITHUB_TOKEN
+./gradlew -p gradle/schema-publisher publish
+unset GITHUB_TOKEN
+```
+
+Once the schema package is available, publish a GitHub Release from a commit
+containing the Android publishing configuration. The release workflow will
+resolve the schema from the registry and publish the Android modules. For
+cross-repository access, configure the `SCHEMAS_GITHUB_USER` Actions variable
+and `SCHEMAS_GITHUB_TOKEN` Actions secret in this repository. Use a classic
+personal access token with `read:packages` (and `repo` if required for a
+private repository), belonging to an account with access to the schema package.
+If these are not set, the build uses `gpr.user`/`gpr.key` or `GITHUB_ACTOR`/
+`GITHUB_TOKEN` instead. Pull requests from forks do not receive Actions secrets.
+Consumers must have access to both packages. Re-running a workflow for an older
+release uses the commit associated with that release, not the latest changes.
 
 
 # RADAR-Commons-Android

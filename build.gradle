@@ -38,6 +38,7 @@ plugins {
 
 allprojects {
     ext.githubRepoName = 'UoM-Digital-Health-Software/CONNECT-radar-commons-android'
+    ext.githubPackagesUrl = 'https://maven.pkg.github.com/uom-digital-health-software/CONNECT-radar-commons-android'
 
     ext.githubUrl = 'https://github.com/' + githubRepoName + '.git'
     ext.issueUrl = 'https://github.com/' + githubRepoName + '/issues'
@@ -68,6 +69,17 @@ subprojects {
         google()
         mavenCentral()
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven {
+            name = "GitHubPackagesSchemas"
+            url = uri("https://maven.pkg.github.com/uom-digital-health-software/CONNECT-RADAR-Schemas")
+            credentials {
+                username = System.getenv("SCHEMAS_GITHUB_USER") ?: findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+                password = System.getenv("SCHEMAS_GITHUB_TOKEN") ?: findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+            }
+            content {
+                includeModule("org.radarbase", "radar-schemas-commons")
+            }
+        }
     }
 
     dependencies {

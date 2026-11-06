@@ -21,7 +21,6 @@ This package is then being consumed by the **https://github.com/thehyve/radar-pr
 
 ## Deploy locally
 
-
 ### Local schema package
 
 (Mac instructions)
@@ -72,7 +71,35 @@ if changes were made to this plugin and the cordova-plugin-radar is setup with m
 ```
 
 
+## Consume from GitHub Packages
 
+The Android libraries are published to this repository's GitHub Packages Maven
+registry. Add the registry to the consuming project's repositories and provide
+GitHub Packages credentials:
+
+```groovy
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/UoM-Digital-Health-Software/CONNECT-radar-commons-android")
+        credentials {
+            username = findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
+dependencies {
+    implementation "org.radarbase:radar-commons-android:1.2.18-CONNECTnext(124)"
+}
+```
+
+For local builds, set `gpr.user` and `gpr.key` in `~/.gradle/gradle.properties`.
+Use a GitHub token with `read:packages` access and ensure the account has access
+to this repository's package. In GitHub Actions, grant the consuming workflow
+package read access and provide `GITHUB_ACTOR` and `GITHUB_TOKEN`.
+
+The other published modules use the same group and version, with the module
+name as the artifact ID (for example, `org.radarbase:radar-android-health-connect`).
 
 
 # RADAR-Commons-Android

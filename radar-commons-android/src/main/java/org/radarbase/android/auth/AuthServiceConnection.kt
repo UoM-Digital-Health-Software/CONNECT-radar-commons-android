@@ -2,6 +2,7 @@ package org.radarbase.android.auth
 
 import android.content.Context
 import androidx.annotation.Keep
+import org.radarbase.android.RadarApplication
 import org.radarbase.android.util.ManagedServiceConnection
 import org.slf4j.LoggerFactory
 
@@ -9,7 +10,7 @@ import org.slf4j.LoggerFactory
 open class AuthServiceConnection(
     context: Context,
     private val listener: LoginListener,
-) : ManagedServiceConnection<AuthService.AuthServiceBinder>(context, AuthService.serviceClass) {
+) : ManagedServiceConnection<AuthService.AuthServiceBinder>(context,(context.applicationContext as RadarApplication).authService ) {
     private lateinit var registration: AuthService.LoginListenerRegistration
 
     init {

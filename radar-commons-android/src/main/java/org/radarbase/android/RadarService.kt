@@ -523,6 +523,7 @@ abstract class RadarService : LifecycleService(), ServerStatusListener, LoginLis
         }
         add(PermissionRequesters.ignoreBatteryOptimization)
         add(PermissionRequesters.systemOverlay)
+       
     }
 
     private fun updateProviders(authState: AppAuthState, config: SingleRadarConfiguration) {

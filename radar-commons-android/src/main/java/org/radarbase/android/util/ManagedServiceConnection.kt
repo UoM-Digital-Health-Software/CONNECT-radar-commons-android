@@ -24,6 +24,12 @@ open class ManagedServiceConnection<T: IBinder>(
     val onUnboundListeners: MutableList<(T) -> Unit> = mutableListOf()
     var bindFlags = BIND_AUTO_CREATE
 
+    /**
+     * Whether [unbind] also stops the service. Off by default: stopping a service that other
+     * components still rely on (e.g. RadarService from a SourceService) clears its started state.
+     */
+    var stopServiceOnUnbind = false
+
     private val connection: ServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -90,12 +96,8 @@ open class ManagedServiceConnection<T: IBinder>(
                 logger.warn("Cannot unbind connection that was not bound.")
             }
 
-            try {
-                val intent = Intent(context, cls)
-                context.stopService(intent)
-                isUnbinded = true;
-            } catch (ex: Exception) {
-                logger.warn("Cannot stop nonexistent service.")
+            if (stopServiceOnUnbind) {
+                isUnbinded = stopService() || isUnbinded
             }
 
             if(isUnbinded) {
@@ -114,17 +116,21 @@ open class ManagedServiceConnection<T: IBinder>(
             logger.warn("Cannot unbind connection that was not bound.")
         }
 
-        try {
-            val intent = Intent(context, cls)
-            context.stopService(intent)
-            isUnbinded = true;
-        } catch (ex: Exception) {
-            logger.warn("Cannot stop nonexistent service.")
+        if (stopServiceOnUnbind) {
+            isUnbinded = stopService() || isUnbinded
         }
 
 
 
         return isUnbinded
+    }
+
+    private fun stopService(): Boolean = try {
+        context.stopService(Intent(context, cls))
+        true
+    } catch (ex: Exception) {
+        logger.warn("Cannot stop nonexistent service.")
+        false
     }
 
     override fun toString(): String = "ManagedServiceConnection<${cls.simpleName}>"

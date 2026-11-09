@@ -24,6 +24,7 @@ import android.content.Context
 import android.content.Context.*
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Debug
 import android.os.PowerManager
 import android.os.Process.THREAD_PRIORITY_BACKGROUND
@@ -103,7 +104,11 @@ class OfflineProcessor(
         }
         handler.execute {
             didStart = true
-            context.registerReceiver(this.receiver, IntentFilter(requestName), RECEIVER_EXPORTED)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.registerReceiver(this.receiver, IntentFilter(requestName), RECEIVER_NOT_EXPORTED)
+            } else {
+                context.registerReceiver(this.receiver, IntentFilter(requestName))
+            }
             schedule()
             initializer?.let { it() }
         }

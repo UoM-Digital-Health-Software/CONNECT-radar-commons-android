@@ -1,0 +1,43 @@
+plugins {
+    id 'maven-publish'
+}
+
+def schemaVersion = '0.8.5-connect-SNAPSHOT'
+def schemaName = "radar-schemas-commons-${schemaVersion}"
+def schemaDir = file("${System.getProperty('user.home')}/.m2/repository/org/radarbase/radar-schemas-commons/${schemaVersion}")
+
+publishing {
+    publications {
+        schema(MavenPublication) {
+            groupId = 'org.radarbase'
+            artifactId = 'radar-schemas-commons'
+            version = schemaVersion
+
+            artifact file("${schemaDir}/${schemaName}.jar")
+            artifact(file("${schemaDir}/${schemaName}-sources.jar")) {
+                classifier = 'sources'
+            }
+            artifact(file("${schemaDir}/${schemaName}-javadoc.jar")) {
+                classifier = 'javadoc'
+            }
+
+            pom.withXml {
+                def originalPom = new XmlParser(false, false).parse(file("${schemaDir}/${schemaName}.pom"))
+                def generatedPom = asNode()
+                generatedPom.children().clear()
+                originalPom.children().each { generatedPom.append(it) }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = uri('https://maven.pkg.github.com/uom-digital-health-software/CONNECT-RADAR-Schemas')
+            credentials {
+                username = findProperty('gpr.user') ?: System.getenv('GITHUB_ACTOR')
+                password = findProperty('gpr.key') ?: System.getenv('GITHUB_TOKEN')
+            }
+        }
+    }
+}

@@ -43,7 +43,7 @@ allprojects {
     ext.issueUrl = 'https://github.com/' + githubRepoName + '/issues'
     ext.website = 'http://radar-base.org'
 
-    version = "1.2.18-CONNECTnext(124)"
+    version = "1.0.0-CONNECT"
     group = 'org.radarbase'
 
     ext.versionCode = 50
@@ -56,6 +56,8 @@ subprojects {
     apply plugin: 'com.android.library'
     apply plugin: 'kotlin-android'
     apply plugin: 'idea'
+
+
 
 //---------------------------------------------------------------------------//
 // Sources and classpath configurations                                      //
@@ -98,6 +100,7 @@ subprojects {
             languageVersion = '1.7'
         }
     }
+
 }
 
 def isNonStable = { String version ->

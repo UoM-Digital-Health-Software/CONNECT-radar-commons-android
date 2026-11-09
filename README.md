@@ -96,7 +96,7 @@ repositories {
 }
 
 dependencies {
-    implementation "org.radarbase:radar-commons-android:1.2.18-CONNECTnext(124)"
+    implementation "org.radarbase:radar-commons-android:1.0.0-CONNECT"
 }
 ```
 

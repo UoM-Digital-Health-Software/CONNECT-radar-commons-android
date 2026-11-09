@@ -5,6 +5,10 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+  packages: write
+
 env:
   DOCKER_IMAGE: radarbase/radar-output-restructure
 
@@ -12,6 +16,10 @@ jobs:
   upload:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SCHEMAS_GITHUB_USER: ${{ vars.SCHEMAS_GITHUB_USER }}
+      SCHEMAS_GITHUB_TOKEN: ${{ secrets.SCHEMAS_GITHUB_TOKEN }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -40,13 +48,5 @@ jobs:
           files: '*/build/outputs/aar/*;plugins/*/build/outputs/aar/*'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install gpg secret key
-        run: |
-          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
-          gpg --list-secret-keys --keyid-format LONG
-
       - name: Publish
-        env:
-          OSSRH_USER: ${{ secrets.OSSRH_USER }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        run: ./gradlew -Psigning.gnupg.keyName=${{ secrets.OSSRH_GPG_SECRET_KEY_NAME }} -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} publish closeAndReleaseSonatypeStagingRepository
+        run: ./gradlew publish
